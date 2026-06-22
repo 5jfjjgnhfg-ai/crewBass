@@ -1,0 +1,94 @@
+{
+  "north": [
+    {
+      "id": "jp",
+      "name": "JP",
+      "route": "north",
+      "lat": 34.6654,
+      "lng": 135.4323,
+      "description": "ジュラシックパーク付近"
+    },
+    {
+      "id": "westcourt",
+      "name": "ウエストコート",
+      "route": "north",
+      "lat": 34.6660,
+      "lng": 135.4315,
+      "description": "ウエストコート付近"
+    },
+    {
+      "id": "wtw",
+      "name": "WTW",
+      "route": "north",
+      "lat": 34.6667,
+      "lng": 135.4308,
+      "description": "ウォーターワールド付近"
+    },
+    {
+      "id": "fj_ura",
+      "name": "FJ裏",
+      "route": "north",
+      "lat": 34.6672,
+      "lng": 135.4298,
+      "description": "フライングダイナソー裏"
+    },
+    {
+      "id": "uwl",
+      "name": "UWL",
+      "route": "north",
+      "lat": 34.6678,
+      "lng": 135.4288,
+      "description": "ユニバーサルワンダーランド付近"
+    }
+  ],
+  "south": [
+    {
+      "id": "deck_office",
+      "name": "デッキオフィス",
+      "route": "south",
+      "lat": 34.6640,
+      "lng": 135.4340,
+      "description": "デッキオフィス（パークストア3付近）"
+    },
+    {
+      "id": "crew_service",
+      "name": "クルーサービス棟",
+      "route": "south",
+      "lat": 34.6635,
+      "lng": 135.4350,
+      "description": "クルーサービス棟"
+    },
+    {
+      "id": "stage33",
+      "name": "Stage33",
+      "route": "south",
+      "lat": 34.6628,
+      "lng": 135.4360,
+      "description": "Stage33付近"
+    },
+    {
+      "id": "sfr",
+      "name": "SFR",
+      "route": "south",
+      "lat": 34.6620,
+      "lng": 135.4370,
+      "description": "スペースファンタジー付近"
+    },
+    {
+      "id": "gate4",
+      "name": "Gate4前",
+      "route": "south",
+      "lat": 34.6612,
+      "lng": 135.4380,
+      "description": "Gate4前"
+    },
+    {
+      "id": "parade_warehouse",
+      "name": "パレード倉庫",
+      "route": "south",
+      "lat": 34.6605,
+      "lng": 135.4390,
+      "description": "パレード倉庫"
+    }
+  ]
+}
