@@ -25,17 +25,26 @@ body {
 .settings-top-right {
   position: fixed;
   top: 12px;
+  top: calc(12px + env(safe-area-inset-top, 0px));
   right: 12px;
-  width: 40px;
-  height: 40px;
+  right: calc(12px + env(safe-area-inset-right, 0px));
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: none;
   background: #334155;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-  z-index: 50;
+  z-index: 9999;
   transition: transform 0.2s;
+  -webkit-tap-highlight-color: rgba(255,255,255,0.2);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .settings-top-right:active { transform: scale(0.9); }
 
@@ -227,14 +236,14 @@ body {
   color: #991b1b;
 }
 
-/* URL自動読み取りセクション */
-.auto-read-section {
+/* 8:30以降オープンボタン */
+.after830-section {
   margin-top: 12px;
   padding-top: 10px;
   border-top: 1px solid #374151;
   text-align: center;
 }
-.auto-read-btn {
+.after830-btn {
   padding: 10px 16px;
   border-radius: 8px;
   border: 2px solid #6b7280;
@@ -246,16 +255,12 @@ body {
   transition: all 0.2s;
   width: 100%;
 }
-.auto-read-btn:active { background: #4b5563; }
-.auto-read-status {
-  font-size: 0.75rem;
-  margin-top: 6px;
-  min-height: 1.2em;
-  color: #94a3b8;
+.after830-btn:active { background: #4b5563; }
+.after830-btn.active {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  color: #92400e;
 }
-.auto-read-status.loading { color: #fbbf24; }
-.auto-read-status.error { color: #ef4444; }
-.auto-read-status.success { color: #22c55e; }
 
 /* 営業時間ボタン */
 .park-hours-section {
@@ -521,10 +526,12 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: #0f172a;
-  z-index: 200;
+  z-index: 10000;
   overflow-y: auto;
   padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top, 0px));
   animation: slideUp 0.2s ease;
+  -webkit-overflow-scrolling: touch;
 }
 @keyframes slideUp {
   from { transform: translateY(100%); }

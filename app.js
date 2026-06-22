@@ -213,7 +213,8 @@ const state = {
   favFilterActive: false,
   lastStop: null,
   customCoords: {},
-  debugMode: false
+  debugMode: false,
+  after830open: false
 };
 
 // ===== ユーティリティ =====
@@ -262,7 +263,8 @@ function saveState() {
     lastStop: state.lastStop,
     customCoords: state.customCoords,
     debugMode: state.debugMode,
-    currentDirection: state.currentDirection
+    currentDirection: state.currentDirection,
+    after830open: state.after830open
   };
   localStorage.setItem('usjCrewBus', JSON.stringify(toSave));
 }
@@ -293,14 +295,29 @@ function getSchedule(stopName, route, direction, mode) {
   if (!routeData || !routeData[stopName]) return [];
   const stopData = routeData[stopName];
   if (!stopData[direction] || stopData[direction] === null) return [];
+  let schedule;
   if (mode === '18') {
     const fullSchedule = stopData[direction]['19'] || [];
-    return fullSchedule.filter(time => {
+    schedule = fullSchedule.filter(time => {
       const hour = parseInt(time.split(':')[0]);
       return hour <= 20;
     });
+  } else {
+    schedule = stopData[direction][mode] || [];
   }
-  return stopData[direction][mode] || [];
+  // 8:30以降オープンの場合、6時台の最初3本を運休として除外
+  if (state.after830open) {
+    let removed = 0;
+    schedule = schedule.filter(time => {
+      const hour = parseInt(time.split(':')[0]);
+      if (hour === 6 && removed < 3) {
+        removed++;
+        return false;
+      }
+      return true;
+    });
+  }
+  return schedule;
 }
 
 function getNextBuses(stopName, route, mode, direction, count = 3) {
@@ -341,7 +358,12 @@ function renderStopList() {
   stops.forEach(stop => {
     // お気に入りフィルターがONの場合、お気に入りに登録されているもののみ表示
     if (state.favFilterActive) {
-      const isFav = state.favorites.some(f => f.stopId === stop.id && f.route === state.currentRoute);
+      const isFav = state.favorites.some(f => {
+        if (f.stopId !== stop.id || f.route !== state.currentRoute) return false;
+        // 行き先が選択されている場合は行き先も一致するものを表示
+        if (state.currentDirection && f.direction !== state.currentDirection) return false;
+        return true;
+      });
       if (!isFav) return;
     }
 
@@ -399,6 +421,7 @@ function renderDirectionButtons() {
       state.currentDirection = dir;
       saveState();
       renderDirectionButtons();
+      renderStopList();
       updateBusInfo();
     });
     container.appendChild(btn);
@@ -697,9 +720,26 @@ function initClosingModePopup() {
     });
   });
 
-  document.getElementById('autoReadClosingBtn').addEventListener('click', () => {
-    autoReadClosingTime();
-  });
+  // 8:30以降オープントグル
+  const after830Btn = document.getElementById('after830Btn');
+  if (after830Btn) {
+    after830Btn.classList.toggle('active', state.after830open);
+    after830Btn.addEventListener('click', () => {
+      state.after830open = !state.after830open;
+      after830Btn.classList.toggle('active', state.after830open);
+      saveState();
+      updateBusInfo();
+      updateAfter830Badge();
+    });
+  }
+}
+
+function updateAfter830Badge() {
+  const btn = document.getElementById('after830Btn');
+  if (btn) {
+    btn.textContent = state.after830open ? '8:30以降オープン: ON' : '8:30以降オープン: OFF';
+    btn.classList.toggle('active', state.after830open);
+  }
 }
 
 function updateClosingModeButtons() {
@@ -708,47 +748,7 @@ function updateClosingModeButtons() {
   });
 }
 
-// ===== 閉園時間URL自動読み取り =====
-async function autoReadClosingTime() {
-  const statusEl = document.getElementById('autoReadStatus');
-  statusEl.textContent = '取得中...';
-  statusEl.className = 'auto-read-status loading';
 
-  try {
-    const response = await fetch('https://parkinfo-sp.usj.co.jp/schedule/realtime/realtime_index2.html', {
-      mode: 'cors',
-      signal: AbortSignal.timeout(8000)
-    });
-    if (!response.ok) throw new Error('HTTP error');
-    const html = await response.text();
-    const match = html.match(/(\d{1,2}):\d{2}\s*〜\s*(\d{1,2}):\d{2}/);
-    if (match) {
-      const closeHour = parseInt(match[2]);
-      if (closeHour >= 18 && closeHour <= 22) {
-        state.closingMode = String(closeHour);
-        saveState();
-        updateModeBadge();
-        updateClosingModeButtons();
-        updateBusInfo();
-        statusEl.textContent = `✅ ${closeHour}時閉園を設定しました`;
-        statusEl.className = 'auto-read-status success';
-      } else {
-        statusEl.textContent = '読み取り失敗（時間範囲外）';
-        statusEl.className = 'auto-read-status error';
-      }
-    } else {
-      statusEl.textContent = '読み取り失敗';
-      statusEl.className = 'auto-read-status error';
-    }
-  } catch(e) {
-    statusEl.textContent = '読み取り失敗';
-    statusEl.className = 'auto-read-status error';
-  }
-  setTimeout(() => {
-    statusEl.textContent = '';
-    statusEl.className = 'auto-read-status';
-  }, 4000);
-}
 
 // ===== ルートタブ =====
 function initRouteTabs() {
@@ -1032,6 +1032,7 @@ function init() {
   }
 
   updateModeBadge();
+  updateAfter830Badge();
 
   // GPS取得 or デフォルト選択
   if (!state.currentStop) {
