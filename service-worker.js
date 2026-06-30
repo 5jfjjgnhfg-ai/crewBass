@@ -1,5 +1,5 @@
 // ===== USJ クルーバス Service Worker =====
-const CACHE_NAME = 'usj-crew-bus-v7';
+const CACHE_NAME = 'crew-bus-v8';
 const ASSETS = [
   './',
   './index.html',

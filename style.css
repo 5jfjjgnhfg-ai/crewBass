@@ -743,6 +743,81 @@ input:checked + .slider::before { transform: translateX(22px); }
   min-height: 1.2em;
 }
 
+/* ===== 運休時間設定 ===== */
+.setting-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+.suspend-form {
+  margin-top: 4px;
+}
+.suspend-form-row {
+  display: flex;
+  gap: 8px;
+}
+.suspend-form-row select {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #475569;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+}
+.suspend-times-list {
+  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.suspend-header {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid #334155;
+}
+.suspend-hour-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #1e293b;
+}
+.suspend-hour-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #94a3b8;
+  min-width: 35px;
+}
+.suspend-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.suspend-time-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1.5px solid #475569;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 36px;
+  text-align: center;
+}
+.suspend-time-btn:active { transform: scale(0.9); }
+.suspend-time-btn.suspended {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+  text-decoration: line-through;
+}
+
 /* ===== セクション共通 ===== */
 .section {
   margin-bottom: 4px;

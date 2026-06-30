@@ -44,7 +44,7 @@
     <section id="timeSection" class="section">
       <div class="time-row" id="timeRow">
         <div class="current-time-small" id="currentTime">--:--:--</div>
-        <div class="mode-badge" id="modeBadge">22時閉園</div>
+        <div class="mode-badge" id="modeBadge">18時閉園</div>
       </div>
       <!-- 閉園時間変更ポップアップ -->
       <div class="closing-mode-popup hidden" id="closingModePopup">
@@ -57,10 +57,10 @@
           <button class="closing-opt" data-mode="22">22時</button>
         </div>
         <div class="after830-section">
-          <button class="after830-btn" id="after830Btn">8:30以降オープン: OFF</button>
+          <button class="after830-btn" id="after830Btn" aria-label="8時30分以降オープン">8時30分以降オープン</button>
         </div>
         <div class="park-hours-section">
-          <a href="https://parkinfo-sp.usj.co.jp/schedule/realtime/realtime_index2.html" target="_blank" rel="noopener" class="park-hours-btn" id="parkHoursBtn">📋 営業時間を確認</a>
+          <a href="https://parkinfo-sp.usj.co.jp/schedule/realtime/realtime_index2.html" target="_blank" rel="noopener" class="park-hours-btn">📋 営業時間を確認</a>
         </div>
       </div>
     </section>
@@ -89,7 +89,7 @@
 
     <!-- 全時刻表表示 -->
     <section id="fullTimetable" class="section">
-      <button class="toggle-timetable" id="toggleTimetableBtn">📅 全時刻表を表示</button>
+      <button class="toggle-timetable" id="toggleTimetableBtn">全時刻表を表示</button>
       <div class="timetable-full hidden" id="timetableFull"></div>
     </section>
 
@@ -133,6 +133,23 @@
             </div>
           </div>
           <div id="favoritesList" class="favorites-list"></div>
+        </div>
+        <div class="setting-group">
+          <label>🚫 運休時間設定</label>
+          <p class="setting-desc">始発停留所の時刻をタップすると、その便の全停留所が運休になります</p>
+          <div class="suspend-form">
+            <div class="suspend-form-row">
+              <select id="suspendRouteSelect">
+                <option value="north">NORTH</option>
+                <option value="south">SOUTH</option>
+              </select>
+              <select id="suspendDirSelect">
+                <option value="toDeck">デッキ行き</option>
+                <option value="toCS">CS棟行き</option>
+              </select>
+            </div>
+          </div>
+          <div id="suspendTimesList" class="suspend-times-list"></div>
         </div>
         <div class="setting-group">
           <label>座標データ管理</label>
