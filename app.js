@@ -1597,19 +1597,29 @@ function renderFullTimetable() {
   container.innerHTML = '';
   const isSouth = state.currentRoute === 'south';
 
+  // 次のバスの時刻を取得してハイライト対象にする
+  const nextBuses = getNextBuses(state.currentStopId, state.currentRoute, state.closingMode, state.currentDirection, 1);
+  const highlightTimes = new Set(nextBuses.map(b => b.time));
+
   const grouped = {};
   schedule.forEach(time => {
     const hour = time.split(':')[0];
     if (!grouped[hour]) grouped[hour] = [];
-    grouped[hour].push(time.split(':')[1]);
+    grouped[hour].push({ min: time.split(':')[1], full: time });
   });
 
   Object.keys(grouped).sort((a,b) => Number(a) - Number(b)).forEach(hour => {
     const div = document.createElement('div');
     div.className = 'timetable-hour';
+    const minutesHtml = grouped[hour].map(item => {
+      if (highlightTimes.has(item.full)) {
+        return `<span class="timetable-next-bus${isSouth ? ' south' : ''}">${item.min}</span>`;
+      }
+      return item.min;
+    }).join('  ');
     div.innerHTML = `
       <div class="timetable-hour-label ${isSouth ? 'south-label' : ''}">${hour}時</div>
-      <div class="timetable-minutes">${grouped[hour].join('  ')}</div>
+      <div class="timetable-minutes">${minutesHtml}</div>
     `;
     container.appendChild(div);
   });
