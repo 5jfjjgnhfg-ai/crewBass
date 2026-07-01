@@ -767,9 +767,6 @@ input:checked + .slider::before { transform: translateX(22px); }
 }
 .suspend-times-list {
   margin-top: 10px;
-  max-height: 300px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 .suspend-header {
   font-size: 0.8rem;
@@ -821,4 +818,91 @@ input:checked + .slider::before { transform: translateX(22px); }
 /* ===== セクション共通 ===== */
 .section {
   margin-bottom: 4px;
+}
+
+/* ===== バス現在位置アニメーション ===== */
+.bus-position-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-radius: 12px;
+  border: 1px solid #334155;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 0;
+  min-height: 40px;
+}
+.bus-position-track:empty {
+  display: none;
+}
+.bus-pos-stop {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  padding: 3px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.bus-pos-stop.active {
+  color: #38bdf8;
+  font-weight: 700;
+  background: rgba(56, 189, 248, 0.1);
+}
+.bus-pos-stop.passed {
+  color: #475569;
+}
+.bus-pos-separator {
+  color: #475569;
+  font-size: 0.6rem;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+.bus-pos-bus {
+  font-size: 1.3rem;
+  padding: 0 4px;
+  flex-shrink: 0;
+  animation: busPulse 2s ease-in-out infinite;
+  display: inline-block;
+}
+.bus-pos-bus.moving-right {
+  transform: scaleX(-1);
+  animation: busPulse 2s ease-in-out infinite, busSlideRight 1.5s ease-in-out infinite;
+}
+.bus-pos-bus.moving-left {
+  animation: busPulse 2s ease-in-out infinite, busSlideLeft 1.5s ease-in-out infinite;
+}
+.bus-pos-arrow {
+  color: #38bdf8;
+  font-size: 0.6rem;
+  padding: 0 6px;
+  flex-shrink: 0;
+  animation: arrowPulse 1.5s ease-in-out infinite;
+}
+.bus-pos-dash {
+  font-size: 0.8rem;
+  padding: 0 2px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.bus-pos-dash.flip {
+  transform: scaleX(-1);
+  display: inline-block;
+}
+@keyframes busPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+@keyframes busSlideRight {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 4px 0; }
+}
+@keyframes busSlideLeft {
+  0%, 100% { translate: 0 0; }
+  50% { translate: -4px 0; }
+}
+@keyframes arrowPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
 }

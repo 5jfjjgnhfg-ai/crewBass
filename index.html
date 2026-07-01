@@ -81,6 +81,11 @@
       <div class="stop-list" id="stopList"></div>
     </section>
 
+    <!-- バス現在位置アニメーション -->
+    <section id="busPositionSection" class="section">
+      <div class="bus-position-track" id="busPositionTrack"></div>
+    </section>
+
     <!-- 次便一覧（直近3つ） -->
     <section id="upcomingSection" class="section">
       <div class="section-title">📋 次の便一覧</div>
@@ -135,6 +140,16 @@
           <div id="favoritesList" class="favorites-list"></div>
         </div>
         <div class="setting-group">
+          <label>座標データ管理</label>
+          <button id="exportDataBtn" class="action-btn">エクスポート</button>
+          <button id="importDataBtn" class="action-btn">インポート</button>
+          <input type="file" id="importFileInput" accept=".json" class="hidden">
+        </div>
+        <div class="setting-group">
+          <label>座標登録モード</label>
+          <button id="coordRegisterBtn" class="action-btn">座標登録</button>
+        </div>
+        <div class="setting-group">
           <label>🚫 運休時間設定</label>
           <p class="setting-desc">始発停留所の時刻をタップすると、その便の全停留所が運休になります</p>
           <div class="suspend-form">
@@ -150,16 +165,6 @@
             </div>
           </div>
           <div id="suspendTimesList" class="suspend-times-list"></div>
-        </div>
-        <div class="setting-group">
-          <label>座標データ管理</label>
-          <button id="exportDataBtn" class="action-btn">エクスポート</button>
-          <button id="importDataBtn" class="action-btn">インポート</button>
-          <input type="file" id="importFileInput" accept=".json" class="hidden">
-        </div>
-        <div class="setting-group">
-          <label>座標登録モード</label>
-          <button id="coordRegisterBtn" class="action-btn">座標登録</button>
         </div>
         <div class="setting-group">
           <label>デバッグ情報</label>
