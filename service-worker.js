@@ -1,5 +1,5 @@
 // ===== USJ クルーバス Service Worker =====
-const CACHE_NAME = 'crew-bus-v24';
+const CACHE_NAME = 'crew-bus-v26';
 const ASSETS = [
   './',
   './index.html',
@@ -7,7 +7,8 @@ const ASSETS = [
   './app.js',
   './manifest.json',
   './stops.json',
-  './timetables.json'
+  './timetables.json',
+  './schedule.json'
 ];
 
 // インストール時にキャッシュ
@@ -32,12 +33,30 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// フェッチ時にキャッシュファースト
+// フェッチ時の戦略
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  // schedule.jsonはネットワーク優先（常に最新を取得）
+  if (url.pathname.endsWith('schedule.json')) {
+    event.respondWith(
+      fetch(event.request).then((response) => {
+        if (response && response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return response;
+      }).catch(() => {
+        return caches.match(event.request);
+      })
+    );
+    return;
+  }
+  // その他はキャッシュファースト + バックグラウンド更新
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) {
-        // バックグラウンドで更新
         fetch(event.request).then((response) => {
           if (response && response.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {
@@ -56,7 +75,6 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       }).catch(() => {
-        // オフラインフォールバック
         if (event.request.destination === 'document') {
           return caches.match('./index.html');
         }

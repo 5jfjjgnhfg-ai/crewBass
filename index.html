@@ -167,6 +167,17 @@
           <div id="suspendTimesList" class="suspend-times-list"></div>
         </div>
         <div class="setting-group">
+          <label>📅 営業スケジュール管理</label>
+          <p class="setting-desc">JSONを貼り付けて保存すると、毎日の閉園時間が自動で切り替わります</p>
+          <div class="schedule-info" id="scheduleInfo"></div>
+          <textarea id="scheduleJsonInput" class="schedule-textarea" placeholder='[{"date":"2026-07-08","opening_time":"09:00","closing_hour":21,"note":"21時クローズ"}]' rows="5"></textarea>
+          <div class="schedule-btn-row">
+            <button id="saveScheduleBtn" class="action-btn primary">保存</button>
+            <button id="clearScheduleBtn" class="action-btn">クリア</button>
+            <button id="showScheduleBtn" class="action-btn">現在のデータ表示</button>
+          </div>
+        </div>
+        <div class="setting-group">
           <label>デバッグ情報</label>
           <label class="switch">
             <input type="checkbox" id="debugToggle">

@@ -1081,6 +1081,59 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
+// ===== スケジュール自動読み込み =====
+function loadSchedule() {
+  // localStorageに保存されたスケジュールを優先、なければサーバーのschedule.jsonを読む
+  return new Promise((resolve) => {
+    const localSchedule = localStorage.getItem('usjCrewBusSchedule');
+    if (localSchedule) {
+      try {
+        const data = JSON.parse(localSchedule);
+        applySchedule(data);
+        resolve(true);
+        return;
+      } catch(e) {}
+    }
+    // サーバーからfetch
+    fetch('./schedule.json?t=' + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        applySchedule(data);
+        resolve(true);
+      })
+      .catch(() => resolve(false));
+  });
+}
+
+function applySchedule(scheduleData) {
+  if (!Array.isArray(scheduleData)) return;
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+  const entry = scheduleData.find(e => e.date === todayStr);
+  if (entry && entry.closing_hour) {
+    state.closingMode = String(entry.closing_hour);
+    // 開園時間の判定
+    if (entry.opening_time && entry.opening_time >= '08:30' && entry.opening_time < '09:00') {
+      state.after830open = true;
+    } else if (entry.opening_time && entry.opening_time >= '09:00') {
+      state.after830open = false;
+    }
+    saveState();
+  }
+}
+
+function getScheduleInfo() {
+  const localSchedule = localStorage.getItem('usjCrewBusSchedule');
+  if (localSchedule) {
+    try {
+      return JSON.parse(localSchedule);
+    } catch(e) {}
+  }
+  return null;
+}
+
 // ===== LocalStorage =====
 function saveState() {
   const toSave = {
@@ -2020,6 +2073,83 @@ function renderSuspendTimes() {
   }
 }
 
+// ===== スケジュール管理 =====
+function initScheduleManager() {
+  const saveBtn = document.getElementById('saveScheduleBtn');
+  const clearBtn = document.getElementById('clearScheduleBtn');
+  const showBtn = document.getElementById('showScheduleBtn');
+  const textarea = document.getElementById('scheduleJsonInput');
+  const infoDiv = document.getElementById('scheduleInfo');
+
+  if (!saveBtn) return;
+
+  // 現在のスケジュール情報を表示
+  updateScheduleInfo();
+
+  saveBtn.addEventListener('click', () => {
+    const text = textarea.value.trim();
+    if (!text) { alert('データを入力してください'); return; }
+    try {
+      const data = JSON.parse(text);
+      if (!Array.isArray(data)) { alert('配列形式のJSONを入力してください'); return; }
+      // バリデーション
+      const valid = data.every(e => e.date && e.closing_hour);
+      if (!valid) { alert('各エントリにdateとclosing_hourが必要です'); return; }
+      localStorage.setItem('usjCrewBusSchedule', JSON.stringify(data));
+      applySchedule(data);
+      updateModeBadge();
+      updateBusInfo();
+      updateScheduleInfo();
+      textarea.value = '';
+      alert(`保存完了（${data.length}件）`);
+    } catch(e) {
+      alert('JSONの形式が正しくありません: ' + e.message);
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (confirm('保存済みのスケジュールを削除しますか？')) {
+      localStorage.removeItem('usjCrewBusSchedule');
+      updateScheduleInfo();
+      alert('スケジュールをクリアしました');
+    }
+  });
+
+  showBtn.addEventListener('click', () => {
+    const data = getScheduleInfo();
+    if (data) {
+      textarea.value = JSON.stringify(data, null, 2);
+    } else {
+      textarea.value = '（保存済みデータなし）';
+    }
+  });
+}
+
+function updateScheduleInfo() {
+  const infoDiv = document.getElementById('scheduleInfo');
+  if (!infoDiv) return;
+  const data = getScheduleInfo();
+  if (!data || data.length === 0) {
+    infoDiv.innerHTML = '<span style="color:#64748b">スケジュール未登録（手動で閉園時間を設定してください）</span>';
+    return;
+  }
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+  const entry = data.find(e => e.date === todayStr);
+  const firstDate = data[0].date;
+  const lastDate = data[data.length - 1].date;
+  let html = '';
+  if (entry) {
+    html += `<div class="today-info">今日: ${entry.closing_hour}時閉園 / 開園${entry.opening_time || '--'}</div>`;
+  } else {
+    html += `<div style="color:#f59e0b">今日のデータなし（手動設定を使用）</div>`;
+  }
+  html += `<div class="range-info">登録期間: ${firstDate} 〜 ${lastDate}（${data.length}件）</div>`;
+  infoDiv.innerHTML = html;
+}
+
 // ===== 設定 =====
 function initSettings() {
   document.getElementById('gpsToggle').checked = state.gpsEnabled;
@@ -2115,6 +2245,8 @@ function initSettings() {
     document.getElementById('settingsPanel').classList.add('hidden');
   });
 
+  // スケジュール管理
+  initScheduleManager();
   // お気に入り登録フォーム
   initFavRegisterForm();
   // 運休時間設定
@@ -2235,6 +2367,10 @@ function registerSW() {
 // ===== 初期化 =====
 function init() {
   loadState();
+  loadSchedule().then(() => {
+    updateModeBadge();
+    if (state.currentStopId) updateBusInfo();
+  });
   registerSW();
 
   updateRouteTabs();
